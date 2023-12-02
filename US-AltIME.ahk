@@ -1,16 +1,11 @@
 #Requires AutoHotkey v2.0
 InstallKeybdHook
-
-;;#UseHook
-
+;#UseHook
 
 
-
-
-;;;;; TEST
-
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Options
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; Default options values
 OPTS_JIS2US := True
@@ -46,7 +41,6 @@ Get_OPTS_args() {
     return opts
 }
 
-
 Reload_OPTS() {
     new_args := Get_OPTS_args()
     if (OPTS_DEBUG) {
@@ -69,7 +63,9 @@ F11::KeyHistory
 #HotIf
 
 
-;;;;;; menu test
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Menu
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 SubMenuEsc := Menu()
 SubMenuEsc.Add("No changes", HandlerEscape)
@@ -86,8 +82,6 @@ if (OPTS_DEBUG) {
 A_TrayMenu.Add()
 A_TrayMenu.AddStandard()
 
-
-
 AdjustCheckStatus(menu, item, status) {
   if (status) {
     menu.Check(item)
@@ -96,7 +90,6 @@ AdjustCheckStatus(menu, item, status) {
   }
 }
 
-
 AdjustCheckStatus(A_TrayMenu, "JIS2US mode", OPTS_JIS2US)
 AdjustCheckStatus(A_TrayMenu, "Enable on Remote", OPTS_REMOTE)
 AdjustCheckStatus(SubMenuEsc, OPTS_ESCAPE . "&", True)
@@ -104,13 +97,13 @@ if (OPTS_DEBUG) {
   AdjustCheckStatus(A_TrayMenu, "CAPS to Ctrl", OPTS_CAPS)
 }
 
-
 HandlerJIS2US(ItemName, ItemPos, MyMenu) {
     global OPTS_JIS2US
     OPTS_JIS2US := ! OPTS_JIS2US
     AdjustCheckStatus(MyMenu, ItemName, OPTS_JIS2US)
     Reload_OPTS()
 }
+
 HandlerRemote(ItemName, ItemPos, MyMenu) {
     global OPTS_REMOTE
     OPTS_REMOTE := ! OPTS_REMOTE
@@ -138,9 +131,9 @@ HandlerCaps(ItemName, ItemPos, MyMenu) {
 }
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Remote Desktop
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 GroupAdd "Remote", "ahk_class TscShellContainerClass"
 GroupAdd "Remote", "ahk_class Transparent Windows Client" ; ahk_exe wfica32.exe
@@ -149,21 +142,17 @@ GroupAdd "Remote", "ahk_class MC_MSTSC"
 GroupAdd "AllWindows"
 
 if (!OPTS_JIS2US) {
-  GroupAdd "DisableJIS2US", "ahk_group AllWindows"
+    GroupAdd "DisableJIS2US", "ahk_group AllWindows"
 }
 if (!OPTS_REMOTE) {
-  GroupAdd "DisableJIS2US", "ahk_group Remote"
+    GroupAdd "DisableJIS2US", "ahk_group Remote"
 }
 
-;;;;;; menu test end
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; JIS to US keyboard conversion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-;;#HotIf OPTS_JIS2US and (OPTS_REMOTE or !WinActive("ahk_group Remote"))
 #HotIf !WinActive("ahk_group DisableJIS2US")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; JIS to US
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; 1st row
 +2::Send "{@}"		; " -> @
@@ -189,68 +178,57 @@ if (!OPTS_REMOTE) {
 
 
 
-
-
-#HotIf OPTS_ESCAPE == 1 and !WinActive("ahk_group DisableJIS2US")
+#HotIf !WinActive("ahk_group DisableJIS2US") and OPTS_ESCAPE == 1
 ;;; for US external keyboard - match to the US keytops
  ]::Send "{\}"		; ] -> \
 +]::Send "{|}"		; } -> |
- sc029::Send "{``}"	; zenkaku/hankaku -> `
-+sc029::Send "{~}"	; zenkaku/hankaku -> ~
+ sc029::Send "{``}"	; 漢字 -> `
++sc029::Send "{~}"	; 漢字 -> ~
 
-#HotIf OPTS_ESCAPE == 2 and !WinActive("ahk_group DisableJIS2US")
-;;; swap ESC and `~
-;;; this can be used when JIS2US is off
+#HotIf !WinActive("ahk_group DisableJIS2US") and OPTS_ESCAPE == 2
+;;; swap ESC and `~ only
  ]::Send "{\}"		; ] -> \
 +]::Send "{|}"		; } -> |
-*sc029::Send "{Blind}{Esc}"	; zenkaku/hankaku -> Escape
+*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
  Esc::Send "{``}"
 +Esc::Send "{~}"
 
-#HotIf OPTS_ESCAPE == 3 and !WinActive("ahk_group DisableJIS2US")
+#HotIf !WinActive("ahk_group DisableJIS2US") and OPTS_ESCAPE == 3
 ;;; for jp106
  ]::Send "{``}"		; ] -> `
 +]::Send "{~}"		; } -> ~
-*sc029::Send "{Blind}{Esc}"	; zenkaku/hankaku -> Escape
+*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
 
 #HotIf
-
-
-
-
 
 ;;; Disable ひらがな/カタカナ
-;vkF2sc070	ひらがな/カタカナキー
-
+;vkF2sc070	ひらがな/カタカナ
 *sc070::Return
 
-
 ;;; Disable 英数 / CapsLock
-;vkF0sc03A	英数（CapsLock）dのみ, symbol not found
-;vk14sc03A      CapsLock  shift+英数, d/u, symbol CapsLock
-
-#HotIf OPTS_CAPS
-;; for US101 Driver/local only
-*sc03A::Ctrl
-#HotIf
-;; for jp/remote
+;vkF0sc03A	英数（CapsLock）
+;vk14sc03A      CapsLock
 *sc03A::Return
 
+;; CAPS to Ctrl
+;; for US101 kbd driver only - do not use with regular JP106 kbd driver
+#HotIf OPTS_CAPS
+*sc03A::Ctrl
+#HotIf
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; IME Control
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; IME controls
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; IME Library
 ;;; https://github.com/kdr-s/ime.ahk-v2
-
 #Include "IME.ahk"
 
-;;; only enable IME controls on the local machine
+;;; IME controls works only on the local machine
 #HotIf !WinActive("ahk_group Remote")
 
 ;;; Alt -> IME On/Off
-
 *~RAlt::Send "{Blind}{vk07}"
 RAlt up::
 {
@@ -269,13 +247,9 @@ LAlt up::
     Return
 }
 
-
-
-
-
-;;; henkan/muhenkan -> Alt + IME On/OFF
-;vk1Csc079	変換キー
-;vk1Dsc07B	無変換キー
+;;; 変換/無変換 -> Alt + IME On/OFF
+;vk1Csc079	変換
+;vk1Dsc07B	無変換
 
 *sc079::Send "{Blind}{RAlt down}{vk07}"
 *sc079 up::
@@ -296,22 +270,5 @@ LAlt up::
     }
     Return
 }
-
-
-;;; debug fucs
-debugSavePriorKeys()
-{
-    global debugPriorHotKey := A_PriorHotkey
-    global debugPriorKey := A_Priorkey
-    global debugPriorKeyName := GetKeyName(A_Priorkey)
-    global debugPriorKeyVK := GetKeyVK(A_Priorkey)
-    global debugPriorKeySC := GetKeySC(A_Priorkey)
-}
-debugPrintPriorKeys()
-{
-    ListVars
-}
-
-;#z::debugPrintPriorKeys()
 
 #HotIf
