@@ -11,6 +11,7 @@ InstallKeybdHook
 OPTS_JIS2US := True
 OPTS_REMOTE := False
 OPTS_ESCAPE := 1
+OPTS_US101 := False
 OPTS_CAPS  := False
 OPTS_DEBUG := !A_IsCompiled
 
@@ -24,6 +25,7 @@ Parse_OPTS() {
           case "/E1": OPTS_ESCAPE := 1
           case "/E2": OPTS_ESCAPE := 2
           case "/E3": OPTS_ESCAPE := 3
+          case "/U":  OPTS_US101  := True
           case "/C":  OPTS_CAPS   := True
           case "/D":  OPTS_DEBUG  := True
         }
@@ -36,6 +38,7 @@ Get_OPTS_args() {
     opts .= OPTS_JIS2US ? "" : " /N"
     opts .= OPTS_REMOTE ? " /R" : ""
     opts .= (OPTS_ESCAPE >=2 && OPTS_ESCAPE <= 3) ? " /E" OPTS_ESCAPE : ""
+    opts .= OPTS_US101  ? " /U" : ""
     opts .= OPTS_CAPS   ? " /C" : ""
     opts .= OPTS_DEBUG  ? " /D" : ""
     return opts
@@ -77,6 +80,7 @@ A_TrayMenu.Add("JIS2US mode", HandlerJIS2US)
 A_TrayMenu.Add("Escape Key", SubMenuEsc)
 A_TrayMenu.Add("Enable on Remote", HandlerRemote)
 if (OPTS_DEBUG) {
+  A_TrayMenu.Add("US101 mode", HandlerUS101)
   A_TrayMenu.Add("CAPS to Ctrl", HandlerCaps)
 }
 A_TrayMenu.Add()
@@ -94,6 +98,7 @@ AdjustCheckStatus(A_TrayMenu, "JIS2US mode", OPTS_JIS2US)
 AdjustCheckStatus(A_TrayMenu, "Enable on Remote", OPTS_REMOTE)
 AdjustCheckStatus(SubMenuEsc, OPTS_ESCAPE . "&", True)
 if (OPTS_DEBUG) {
+  AdjustCheckStatus(A_TrayMenu, "US101 mode", OPTS_US101)
   AdjustCheckStatus(A_TrayMenu, "CAPS to Ctrl", OPTS_CAPS)
 }
 
@@ -121,6 +126,12 @@ HandlerEscape(ItemName, ItemPos, MyMenu) {
     }
 }
 
+HandlerUS101(ItemName, ItemPos, MyMenu) {
+    global OPTS_US101
+    OPTS_US101 := ! OPTS_US101
+    AdjustCheckStatus(MyMenu, ItemName, OPTS_US101)
+    Reload_OPTS()
+}
 HandlerCaps(ItemName, ItemPos, MyMenu) {
     global OPTS_CAPS
     OPTS_CAPS := ! OPTS_CAPS
@@ -141,11 +152,22 @@ GroupAdd "Remote", "ahk_class MC_MSTSC"
 
 GroupAdd "AllWindows"
 
-if (!OPTS_JIS2US) {
-    GroupAdd "DisableJIS2US", "ahk_group AllWindows"
-}
-if (!OPTS_REMOTE) {
-    GroupAdd "DisableJIS2US", "ahk_group Remote"
+if (OPTS_US101) {
+  GroupAdd "DisableJIS2US", "ahk_group AllWindows"
+  if (!OPTS_JIS2US) {
+      GroupAdd "DisableUS101", "ahk_group AllWindows"
+  }
+  if (!OPTS_REMOTE) {
+      GroupAdd "DisableUS101", "ahk_group Remote"
+  }
+} else {
+  GroupAdd "DisableUS101", "ahk_group AllWindows"
+  if (!OPTS_JIS2US) {
+      GroupAdd "DisableJIS2US", "ahk_group AllWindows"
+  }
+  if (!OPTS_REMOTE) {
+      GroupAdd "DisableJIS2US", "ahk_group Remote"
+  }
 }
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -209,6 +231,46 @@ if (!OPTS_REMOTE) {
 ;vkF0sc03A	英数（CapsLock）
 ;vk14sc03A      CapsLock
 *sc03A::Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; US101 keyboard driver mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#HotIf !WinActive("ahk_group DisableUS101")
+; JP106              / US101
+; vkF4sc029 半角全角 / vkC0sc029 `~
+; vkDDsc02B ]}       / vkDCsc02B \|
+; vkDCsc07D \|       / vkFFsc07D (none)
+; vkE2sc073 \_       / vkC1sc073 (none)
+
+ sc07D::Send "{\}"	; \ -> \
++sc07D::Send "{|}"	; | -> |
+ sc073::Send "{\}"	; \ -> \
++sc073::Send "{_}"	; _ -> |
+
+#HotIf !WinActive("ahk_group DisableUS101") and OPTS_ESCAPE == 1
+;;; No changes
+ ~sc02B::Return		; ] -> \
++~sc02B::Return		; } -> |
+ ~sc029::Return		; 漢字 -> `
++~sc029::Return		; 漢字 -> ~
+
+#HotIf !WinActive("ahk_group DisableUS101") and OPTS_ESCAPE == 2
+;;; swap ESC and `~ only
+ ~sc02B::Return		; ] -> \
++~sc02B::Return		; } -> |
+*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
+ Esc::Send "{``}"
++Esc::Send "{~}"
+
+#HotIf !WinActive("ahk_group DisableUS101") and OPTS_ESCAPE == 3
+;;; for jp106
+ sc02B::Send "{``}"		; ] -> `
++sc02B::Send "{~}"		; } -> ~
+*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
+
+#HotIf
 
 ;; CAPS to Ctrl
 ;; for US101 kbd driver only - do not use with regular JP106 kbd driver
