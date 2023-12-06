@@ -158,6 +158,8 @@ GroupAdd "Remote", "ahk_class MC_MSTSC"
 
 GroupAdd "AllWindows"
 
+;;; create Group for HotIf conditions
+;;; note that Group is *exlucde* window lists for conversion
 GroupAddCondition(group, condition) {
     if (condition and OPTS_ENABLE) { ; i.e. if the conversion should be enabled
         if (!OPTS_REMOTE) {
@@ -182,7 +184,6 @@ GroupAddCondition("JIS2US_ESC3", !OPTS_US101 and OPTS_ESCAPE == 3)
 
 #HotIf !WinActive("ahk_group JIS2US")
 
-;;; 1st row
 +2::Send "{@}"		; " -> @
 +6::Send "{^}"		; & -> ^
 +7::Send "{&}"		; ' -> &
@@ -193,50 +194,45 @@ GroupAddCondition("JIS2US_ESC3", !OPTS_US101 and OPTS_ESCAPE == 3)
  ^::Send "{=}"		; ^ -> =
 +^::Send "{+}"		; ~ -> +
 
-;;; 2nd row
  @::Send "{[}"		; @ -> [
 +@::Send "{{}"		; ` -> {
  [::Send "{]}"		; [ -> ]
 +[::Send "{}}"		; { -> }
 
-;;; 3rd row
 +;::Send "{:}"		; + -> :
  :::Send "{'}"		; : -> '
  *::Send "{`"}"		; * -> "
 
 
-
+;;; Escape 1: No changes
 #HotIf !WinActive("ahk_group JIS2US_ESC1")
-;;; for US external keyboard - match to the US keytops
  ]::Send "{\}"		; ] -> \
 +]::Send "{|}"		; } -> |
- sc029::Send "{``}"	; 漢字 -> `
-+sc029::Send "{~}"	; 漢字 -> ~
+ sc029::Send "{``}"	; 半角全角 -> `
++sc029::Send "{~}"	; 半角全角 -> ~
 
+;;; Escape 2: swap ESC and `~ only
 #HotIf !WinActive("ahk_group JIS2US_ESC2")
-;;; swap ESC and `~ only
  ]::Send "{\}"		; ] -> \
 +]::Send "{|}"		; } -> |
-*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
+*sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
  Esc::Send "{``}"
 +Esc::Send "{~}"
 
+;;; Escape 3: `~ type4 style for jp106
 #HotIf !WinActive("ahk_group JIS2US_ESC3")
-;;; for jp106
  ]::Send "{``}"		; ] -> `
 +]::Send "{~}"		; } -> ~
-*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
+*sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
 
 #HotIf
 
-;;; Disable ひらがな/カタカナ
+;;; Disable keys
 ;vkF2sc070	ひらがな/カタカナ
-*sc070::Return
-
-;;; Disable 英数 / CapsLock
 ;vkF0sc03A	英数（CapsLock）
 ;vk14sc03A      CapsLock
-*sc03A::Return
+*sc070::Return		; disable ひらがな/カタカナ
+*sc03A::Return		; disable 英数/CapsLock
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -249,45 +245,46 @@ GroupAddCondition("US101_ESC2", OPTS_US101 and OPTS_ESCAPE == 2)
 GroupAddCondition("US101_ESC3", OPTS_US101 and OPTS_ESCAPE == 3)
 GroupAddCondition("US101_CAPS", OPTS_US101 and OPTS_CAPS)
 
-
-#HotIf !WinActive("ahk_group US101")
 ; JP106              / US101
 ; vkF4sc029 半角全角 / vkC0sc029 `~
 ; vkDDsc02B ]}       / vkDCsc02B \|
 ; vkDCsc07D \|       / vkFFsc07D (none)
 ; vkE2sc073 \_       / vkC1sc073 (none)
 
+#HotIf !WinActive("ahk_group US101")
+
  sc07D::Send "{\}"	; \ -> \
 +sc07D::Send "{|}"	; | -> |
  sc073::Send "{\}"	; \ -> \
 +sc073::Send "{_}"	; _ -> |
 
+;;; Escape 1: No changes
 #HotIf !WinActive("ahk_group US101_ESC1")
-;;; No changes
  ~sc02B::Return		; ] -> \
 +~sc02B::Return		; } -> |
- ~sc029::Return		; 漢字 -> `
-+~sc029::Return		; 漢字 -> ~
+ ~sc029::Return		; 半角全角 -> `
++~sc029::Return		; 半角全角 -> ~
 
+;;; Escape 2: swap ESC and `~ only
 #HotIf !WinActive("ahk_group US101_ESC2")
-;;; swap ESC and `~ only
- ~sc02B::Return		; ] -> \
-+~sc02B::Return		; } -> |
-*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
- Esc::Send "{``}"
-+Esc::Send "{~}"
+ ~sc02B::Return			; ] -> \
++~sc02B::Return			; } -> |
+*sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
+ Esc::Send "{``}"		; Escape -> `
++Esc::Send "{~}"		; Escape -> ~
 
+;;; Escape 3: `~ type4 style for jp106
 #HotIf !WinActive("ahk_group US101_ESC3")
-;;; for jp106
  sc02B::Send "{``}"		; ] -> `
 +sc02B::Send "{~}"		; } -> ~
-*sc029::Send "{Blind}{Esc}"	; 漢字 -> Escape
+*sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
 
 
 ;; CAPS to Ctrl
 ;; for US101 kbd driver only - do not use with regular JP106 kbd driver
 #HotIf !WinActive("ahk_group US101_CAPS")
 *sc03A::Ctrl
+
 #HotIf
 
 
