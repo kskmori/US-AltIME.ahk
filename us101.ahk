@@ -21,7 +21,7 @@ GroupAddCondition("US101_CAPS", OPTS_US101 and OPTS_CAPS)
  sc07D::Send "{\}"	; \ -> \
 +sc07D::Send "{|}"	; | -> |
  sc073::Send "{\}"	; \ -> \
-+sc073::Send "{_}"	; _ -> |
++sc073::Send "{_}"	; _ -> _
 
 ;;; Escape 1: No changes
 #HotIf !WinActive("ahk_group US101_ESC1")
