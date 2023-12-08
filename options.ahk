@@ -168,3 +168,12 @@ GroupAddCondition(group, condition) {
     }
 }
 
+;;; Workaround to activate hotkeys in the RDP full screen mode
+;;;   https://www.autohotkey.com/boards/viewtopic.php?p=547610#p547610
+;;;   https://www.autohotkey.com/boards/viewtopic.php?p=93693#p93693
+#HotIf WinActive("ahk_class TscShellContainerClass")
+~vkFF:: {
+    if (A_TimeIdlePhysical > A_TimeSinceThisHotkey)
+        InstallKeybdHook(True, True)
+}
+#HotIf
