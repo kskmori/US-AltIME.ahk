@@ -57,8 +57,8 @@ Reload_OPTS() {
 Parse_OPTS()
 
 #HotIf OPTS_DEBUG
-F12::Reload_OPTS()
-F11::KeyHistory
+ F12::KeyHistory
+^F12::Reload_OPTS()
 #HotIf
 
 
