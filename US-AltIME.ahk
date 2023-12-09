@@ -4,9 +4,10 @@ InstallKeybdHook
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Options
+;;; Common definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#Include "options.ahk"
+; options, menus and other definitions
+#Include "common.ahk"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; JIS to US keyboard conversion
