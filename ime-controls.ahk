@@ -11,8 +11,14 @@
 ;;; IME controls works only on the local machine
 #HotIf !WinActive("ahk_group Remote")
 
+;;; note:
+;;; {vkE8} is sent to prevent the menu bar from activating when Alt is hit.
+;;; {vk07} was used in alt-ime-ahk.ahk for this purpose,
+;;;   but now vk07 can be used by Windows according to the AutoHotKey doc:
+;;;   https://www.autohotkey.com/docs/v2/lib/A_MenuMaskKey.htm#Remarks
+
 ;;; Alt -> IME On/Off
-*~RAlt::Send "{Blind}{vk07}"
+*~RAlt::Send "{Blind}{vkE8}"
 RAlt up::
 {
     if (A_PriorHotkey == "*~RAlt" && (A_PriorKey == "RAlt" || A_PriorKey == "")) {
@@ -21,7 +27,7 @@ RAlt up::
     Return
 }
 
-*~LAlt::Send "{Blind}{vk07}"
+*~LAlt::Send "{Blind}{vkE8}"
 LAlt up::
 {
     if (A_PriorHotkey == "*~LAlt" && (A_PriorKey == "LAlt" || A_PriorKey == "")) {
@@ -34,7 +40,7 @@ LAlt up::
 ;vk1Csc079	変換
 ;vk1Dsc07B	無変換
 
-*sc079::Send "{Blind}{RAlt down}{vk07}"
+*sc079::Send "{Blind}{RAlt down}{vkE8}"
 *sc079 up::
 {
     Send "{Blind}{RAlt up}"
@@ -44,7 +50,7 @@ LAlt up::
     Return
 }
 
-*sc07B::Send "{Blind}{LAlt down}{vk07}"
+*sc07B::Send "{Blind}{LAlt down}{vkE8}"
 *sc07B up::
 {
     Send "{Blind}{LAlt up}"
