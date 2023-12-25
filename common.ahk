@@ -4,26 +4,26 @@
 ;;; Options
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Default options values
-OPTS_ENABLE := True
-OPTS_REMOTE := False
-OPTS_ESCAPE := 1
-OPTS_US101 := False
-OPTS_CAPS  := False
-OPTS_DEBUG := !A_IsCompiled
+OPTS_SUSPEND := False
+OPTS_REMOTE  := False
+OPTS_ESCAPE  := 1
+OPTS_US101   := False
+OPTS_CAPS    := False
+OPTS_DEBUG   := !A_IsCompiled
 
 
 Parse_OPTS() {
     global
     for arg in A_Args {
         switch arg {
-          case "/N":  OPTS_ENABLE := False
-          case "/R":  OPTS_REMOTE := True
-          case "/E1": OPTS_ESCAPE := 1
-          case "/E2": OPTS_ESCAPE := 2
-          case "/E3": OPTS_ESCAPE := 3
-          case "/U":  OPTS_US101  := True
-          case "/C":  OPTS_CAPS   := True
-          case "/D":  OPTS_DEBUG  := True
+          case "/N":  OPTS_SUSPEND := True
+          case "/R":  OPTS_REMOTE  := True
+          case "/E1": OPTS_ESCAPE  := 1
+          case "/E2": OPTS_ESCAPE  := 2
+          case "/E3": OPTS_ESCAPE  := 3
+          case "/U":  OPTS_US101   := True
+          case "/C":  OPTS_CAPS    := True
+          case "/D":  OPTS_DEBUG   := True
         }
     }
 }
@@ -31,12 +31,12 @@ Parse_OPTS() {
 Get_OPTS_args() {
     global
     opts := ""
-    opts .= OPTS_ENABLE ? "" : " /N"
-    opts .= OPTS_REMOTE ? " /R" : ""
+    opts .= OPTS_SUSPEND ? " /N" : ""
+    opts .= OPTS_REMOTE  ? " /R" : ""
     opts .= (OPTS_ESCAPE >=2 && OPTS_ESCAPE <= 3) ? " /E" OPTS_ESCAPE : ""
-    opts .= OPTS_US101  ? " /U" : ""
-    opts .= OPTS_CAPS   ? " /C" : ""
-    opts .= OPTS_DEBUG  ? " /D" : ""
+    opts .= OPTS_US101   ? " /U" : ""
+    opts .= OPTS_CAPS    ? " /C" : ""
+    opts .= OPTS_DEBUG   ? " /D" : ""
     return opts
 }
 
@@ -66,9 +66,9 @@ Parse_OPTS()
 ;;; Menu
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 if (!OPTS_US101) {
-  MENU_MODE := "JIS2US mode"
+  MENU_MODE := "Suspend JIS2US"
 } else {
-  MENU_MODE := "US101 mode"
+  MENU_MODE := "Suspend US101"
 }
 
 SubMenuEsc := Menu()
@@ -77,11 +77,11 @@ SubMenuEsc.Add("swap ESC and ``", HandlerEscape)
 SubMenuEsc.Add("change `` to ESC , ] to ``", HandlerEscape)
 
 A_TrayMenu.Delete()
-A_TrayMenu.Add(MENU_MODE, HandlerEnable)
+A_TrayMenu.Add(MENU_MODE, HandlerSuspend)
+A_TrayMenu.Add("Suspend on Remote", HandlerRemote)
 A_TrayMenu.Add("Escape Key", SubMenuEsc)
-A_TrayMenu.Add("Enable on Remote", HandlerRemote)
 if (OPTS_DEBUG) {
-  A_TrayMenu.Add("Toggle US101", HandlerUS101)
+  A_TrayMenu.Add("US101 mode", HandlerUS101)
   A_TrayMenu.Add("CAPS to Ctrl", HandlerCaps)
 }
 A_TrayMenu.Add()
@@ -95,18 +95,18 @@ AdjustCheckStatus(menu, item, status) {
   }
 }
 
-AdjustCheckStatus(A_TrayMenu, MENU_MODE, OPTS_ENABLE)
-AdjustCheckStatus(A_TrayMenu, "Enable on Remote", OPTS_REMOTE)
+AdjustCheckStatus(A_TrayMenu, MENU_MODE, OPTS_SUSPEND)
+AdjustCheckStatus(A_TrayMenu, "Suspend on Remote", OPTS_REMOTE)
 AdjustCheckStatus(SubMenuEsc, OPTS_ESCAPE . "&", True)
 if (OPTS_DEBUG) {
-  AdjustCheckStatus(A_TrayMenu, "Toggle US101", OPTS_US101)
+  AdjustCheckStatus(A_TrayMenu, "US101 mode", OPTS_US101)
   AdjustCheckStatus(A_TrayMenu, "CAPS to Ctrl", OPTS_CAPS)
 }
 
-HandlerEnable(ItemName, ItemPos, MyMenu) {
-    global OPTS_ENABLE
-    OPTS_ENABLE := ! OPTS_ENABLE
-    AdjustCheckStatus(MyMenu, ItemName, OPTS_ENABLE)
+HandlerSuspend(ItemName, ItemPos, MyMenu) {
+    global OPTS_SUSPEND
+    OPTS_SUSPEND := ! OPTS_SUSPEND
+    AdjustCheckStatus(MyMenu, ItemName, OPTS_SUSPEND)
     Reload_OPTS()
 }
 
@@ -157,8 +157,8 @@ GroupAdd "AllWindows"
 ;;; create Group for HotIf conditions
 ;;; note that Group is *exlucde* window lists for conversion
 GroupAddCondition(group, condition) {
-    if (condition and OPTS_ENABLE) { ; i.e. if the conversion should be enabled
-        if (!OPTS_REMOTE) {
+    if (condition and !OPTS_SUSPEND) { ; i.e. if the conversion should be enabled
+        if (OPTS_REMOTE) { ; i.e. if suspend on remote
             GroupAdd group, "ahk_group Remote"
         }
         ; empty group means the conversion is always enabled
