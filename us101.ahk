@@ -25,23 +25,19 @@ GroupAddCondition("US101_CAPS", OPTS_US101 and OPTS_CAPS)
 
 ;;; Escape 1: No changes
 #HotIf !WinActive("ahk_group US101_ESC1")
- ~sc02B::Return		; ] -> \
-+~sc02B::Return		; } -> |
  ~sc029::Return		; 半角全角 -> `
 +~sc029::Return		; 半角全角 -> ~
 
 ;;; Escape 2: swap ESC and `~ only
 #HotIf !WinActive("ahk_group US101_ESC2")
- ~sc02B::Return			; ] -> \
-+~sc02B::Return			; } -> |
 *sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
  Esc::Send "{``}"		; Escape -> `
 +Esc::Send "{~}"		; Escape -> ~
 
 ;;; Escape 3: `~ type4 style for jp106
 #HotIf !WinActive("ahk_group US101_ESC3")
- sc02B::Send "{``}"		; ] -> `
-+sc02B::Send "{~}"		; } -> ~
+\::Send "{``}"			; ] -> `
+|::Send "{~}"			; } -> ~
 *sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
 
 
