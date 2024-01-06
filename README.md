@@ -33,8 +33,8 @@ US-AltIME.ahk は以下の使い方ができます。
 
 ### インストール
 
-リリースパッケージ US-AltIME.ahk-*.zip を以下のページからダウンロードします。
- * https://github.com/kskmori/US-AltIME.ahk/releases
+リリースパッケージ US-AltIME-*.zip を以下のページからダウンロードします。
+ * https://github.com/kskmori/US-AltIME.ahk/releases/latest
 
 展開してできる US-AltIME.exe を任意の場所に保存します。
 
