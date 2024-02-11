@@ -74,7 +74,7 @@ if (!OPTS_US101) {
 SubMenuEsc := Menu()
 SubMenuEsc.Add("No changes", HandlerEscape)
 SubMenuEsc.Add("swap ESC and ``", HandlerEscape)
-SubMenuEsc.Add("change `` to ESC , ] to ``", HandlerEscape)
+SubMenuEsc.Add("change `` → ESC , ろ → ``", HandlerEscape)
 
 A_TrayMenu.Delete()
 A_TrayMenu.Add(MENU_MODE, HandlerSuspend)

@@ -20,25 +20,29 @@ GroupAddCondition("US101_CAPS", OPTS_US101 and OPTS_CAPS)
 
  sc07D::Send "{\}"	; \ -> \
 +sc07D::Send "{|}"	; | -> |
- sc073::Send "{\}"	; \ -> \
-+sc073::Send "{_}"	; _ -> _
 
 ;;; Escape 1: No changes
 #HotIf !WinActive("ahk_group US101_ESC1")
  ~sc029::Return		; 半角全角 -> `
 +~sc029::Return		; 半角全角 -> ~
+ sc073::Send "{\}"	; \ -> \
++sc073::Send "{_}"	; _ -> _
 
 ;;; Escape 2: swap ESC and `~ only
 #HotIf !WinActive("ahk_group US101_ESC2")
 *sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
  Esc::Send "{``}"		; Escape -> `
 +Esc::Send "{~}"		; Escape -> ~
+ sc073::Send "{\}"		; \ -> \
++sc073::Send "{_}"		; _ -> _
 
-;;; Escape 3: `~ type4 style for jp106
+;;; Escape 3: change \_ to `~, ]} to Enter
 #HotIf !WinActive("ahk_group US101_ESC3")
-\::Send "{``}"			; ] -> `
-|::Send "{~}"			; } -> ~
 *sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
+ sc073::Send "{``}"		; \ -> `
++sc073::Send "{~}"		; _ -> ~
+\::Send "{Enter}"		; ] -> Enter
+|::Send "{Enter}"		; } -> Enter
 
 
 ;; CAPS to Ctrl
@@ -46,5 +50,8 @@ GroupAddCondition("US101_CAPS", OPTS_US101 and OPTS_CAPS)
 #HotIf !WinActive("ahk_group US101_CAPS")
 *sc03A::Ctrl
 
-#HotIf
+;; resume CapsLock only in US101 mode
+#HotIf !WinActive("ahk_group US101")
+*sc03A::CapsLock
 
+#HotIf

@@ -36,6 +36,8 @@ GroupAddCondition("JIS2US_ESC3", !OPTS_US101 and OPTS_ESCAPE == 3)
 +]::Send "{|}"		; } -> |
  sc029::Send "{``}"	; 半角全角 -> `
 +sc029::Send "{~}"	; 半角全角 -> ~
+ ~sc073::Return		; \
++~sc073::Return		; _
 
 ;;; Escape 2: swap ESC and `~ only
 #HotIf !WinActive("ahk_group JIS2US_ESC2")
@@ -44,12 +46,16 @@ GroupAddCondition("JIS2US_ESC3", !OPTS_US101 and OPTS_ESCAPE == 3)
 *sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
  Esc::Send "{``}"		; Escape -> `
 +Esc::Send "{~}"		; Escape -> ~
+ ~sc073::Return			; \
++~sc073::Return			; _
 
-;;; Escape 3: `~ type4 style for jp106
+;;; Escape 3: change \_ to `~, ]} to Enter
 #HotIf !WinActive("ahk_group JIS2US_ESC3")
- ]::Send "{``}"			; ] -> `
-+]::Send "{~}"			; } -> ~
+ ]::Send "{Enter}"		; ] -> Enter
++]::Send "{Enter}"		; ] -> Enter
 *sc029::Send "{Blind}{Esc}"	; 半角全角 -> Escape
+ sc073::Send "{``}"		; \ -> `
++sc073::Send "{~}"		; _ -> ~
 
 #HotIf
 
