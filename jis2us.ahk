@@ -60,9 +60,7 @@ GroupAddCondition("JIS2US_ESC3", !OPTS_US101 and OPTS_ESCAPE == 3)
 #HotIf
 
 ;;; Disable keys
-;vkF2sc070	ひらがな/カタカナ
 ;vkF0sc03A	英数（CapsLock）
 ;vk14sc03A      CapsLock
-*sc070::Return		; disable ひらがな/カタカナ
 *sc03A::Return		; disable 英数/CapsLock
 

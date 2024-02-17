@@ -60,4 +60,10 @@ LAlt up::
     Return
 }
 
+
+;;; ひらがな/カタカナ -> IME On
+;   can not be used as Alt
+;vkF2sc070	ひらがな/カタカナ
+*sc070::IME_SET(1)
+
 #HotIf
