@@ -16,7 +16,7 @@ GroupAddCondition("JIS2US_ESC3", !OPTS_US101 and OPTS_ESCAPE == 3)
 +8::Send "{*}"		; ( -> *
 +9::Send "{(}"		; ) -> (
 +0::Send "{)}"		;   -> )
-+-::Send "{_}"		; = -> _n
++-::Send "{_}"		; = -> _
  ^::Send "{=}"		; ^ -> =
 +^::Send "{+}"		; ~ -> +
 

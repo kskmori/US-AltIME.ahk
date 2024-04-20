@@ -155,7 +155,7 @@ GroupAdd "Remote", "ahk_class MC_MSTSC"
 GroupAdd "AllWindows"
 
 ;;; create Group for HotIf conditions
-;;; note that Group is *exlucde* window lists for conversion
+;;; note that Group is *exclude* window lists for conversion
 GroupAddCondition(group, condition) {
     if (condition and !OPTS_SUSPEND) { ; i.e. if the conversion should be enabled
         if (OPTS_REMOTE) { ; i.e. if suspend on remote
