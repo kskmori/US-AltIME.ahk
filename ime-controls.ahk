@@ -18,20 +18,20 @@
 ;;;   https://www.autohotkey.com/docs/v2/lib/A_MenuMaskKey.htm#Remarks
 
 ;;; Alt -> IME On/Off
-*RAlt::Send "{Blind}{RAlt down}"
+*RAlt::Send "{Blind}{RAlt down}{vkE8}"
 *RAlt up::
 {
-    Send "{Blind}{vkE8}{RAlt up}"
+    Send "{Blind}{RAlt up}"
     if (A_PriorHotkey == "*RAlt" && (A_PriorKey == "RAlt" || A_PriorKey == "")) {
         IME_SET(1)
     }
     Return
 }
 
-*LAlt::Send "{Blind}{LAlt down}"
+*LAlt::Send "{Blind}{LAlt down}{vkE8}"
 *LAlt up::
 {
-    Send "{Blind}{vkE8}{LAlt up}"
+    Send "{Blind}{LAlt up}"
     if (A_PriorHotkey == "*LAlt" && (A_PriorKey == "LAlt" || A_PriorKey == "")) {
         IME_SET(0)
     }
@@ -42,20 +42,20 @@
 ;vk1Csc079	変換
 ;vk1Dsc07B	無変換
 
-*sc079::Send "{Blind}{RAlt down}"
+*sc079::Send "{Blind}{RAlt down}{vkE8}"
 *sc079 up::
 {
-    Send "{Blind}{vkE8}{RAlt up}"
+    Send "{Blind}{RAlt up}"
     if (A_PriorHotkey == "*sc079" && (A_PriorKey == "sc079" || A_PriorKey == "")) {
         IME_SET(1)
     }
     Return
 }
 
-*sc07B::Send "{Blind}{LAlt down}"
+*sc07B::Send "{Blind}{LAlt down}{vkE8}"
 *sc07B up::
 {
-    Send "{Blind}{vkE8}{LAlt up}"
+    Send "{Blind}{LAlt up}"
     if (A_PriorHotkey == "*sc07B" && (A_PriorKey == "sc07B" || A_PriorKey == "")) {
         IME_SET(0)
     }
