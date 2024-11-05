@@ -177,3 +177,16 @@ GroupAddCondition(group, condition) {
         InstallKeybdHook(True, True)
 }
 #HotIf
+
+;;; Other utilities
+
+#HotIf !WinActive("ahk_group Remote")
+
+!LButton::
+{
+  MouseGetPos &xpos, &ypos, &wid
+  WinActivate "ahk_id " wid
+  return
+}
+
+#HotIf
