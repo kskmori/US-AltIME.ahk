@@ -9,6 +9,7 @@ OPTS_REMOTE  := False
 OPTS_ESCAPE  := 1
 OPTS_US101   := False
 OPTS_CAPS    := False
+OPTS_EXTRA   := False
 OPTS_DEBUG   := !A_IsCompiled
 
 
@@ -23,6 +24,7 @@ Parse_OPTS() {
           case "/E3": OPTS_ESCAPE  := 3
           case "/U":  OPTS_US101   := True
           case "/C":  OPTS_CAPS    := True
+          case "/X":  OPTS_EXTRA   := True
           case "/D":  OPTS_DEBUG   := True
         }
     }
@@ -36,6 +38,7 @@ Get_OPTS_args() {
     opts .= (OPTS_ESCAPE >=2 && OPTS_ESCAPE <= 3) ? " /E" OPTS_ESCAPE : ""
     opts .= OPTS_US101   ? " /U" : ""
     opts .= OPTS_CAPS    ? " /C" : ""
+    opts .= OPTS_EXTRA   ? " /X" : ""
     opts .= OPTS_DEBUG   ? " /D" : ""
     return opts
 }
@@ -178,15 +181,24 @@ GroupAddCondition(group, condition) {
 }
 #HotIf
 
-;;; Other utilities
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Extra utilities (my favorites)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#HotIf !WinActive("ahk_group Remote")
-
+;; Activate a window without clicking by Alt + LButton
+#HotIf OPTS_EXTRA and !WinActive("ahk_group Remote")
 !LButton::
 {
   MouseGetPos &xpos, &ypos, &wid
   WinActivate "ahk_id " wid
   return
 }
+#HotIf
 
+;; Ignore Send Shortcut key (Alt + s) in Outlook
+#HotIf OPTS_EXTRA and WinActive("ahk_exe OUTLOOK.EXE")
+!s::
+{
+;  MsgBox "IgnoreSend"
+}
 #HotIf
