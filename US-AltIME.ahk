@@ -7,26 +7,26 @@ InstallKeybdHook
 ;;; Common definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; options, menus and other definitions
-#Include "common.ahk"
+#Include "include/common.ahk"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; define all hotkeys
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#Include "all-hotkeys.ahk"
+#Include "include/all-hotkeys.ahk"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; JIS to US keyboard conversion
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; enabled when JIS2US mode (default)
-#Include "jis2us.ahk"
+#Include "include/jis2us.ahk"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; US101 keyboard driver mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; enabled when US101 mode (/U option)
-#Include "us101.ahk"
+#Include "include/us101.ahk"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; IME controls
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#Include "ime-controls.ahk"
+#Include "include/ime-controls.ahk"
